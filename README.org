@@ -1,0 +1,137 @@
+#+TITLE: Path53
+#+LATEX: \pagebreak
+
+* Overview
+
+=path53= provides a cleaner, simpler interface to Route53 change requests.
+
+* Why does this exist?
+
+Because making simple changes is unreasonably complicated. Route53's errors are
+generic, the request structure is a nested mess of complexity, and the
+validation rules are often surprising. =path53= aims to tame this complexity.
+
+* Installation
+
+#+BEGIN_SRC shell
+  gem install path53
+#+END_SRC
+
+* Usage
+
+First, we need to require it.
+
+#+BEGIN_SRC ruby
+  require 'path53'
+#+END_SRC
+
+We need a HostedZone to change. This can come from the Route53 API, but for the
+purposes of this example, we'll use a simple fixture.
+
+#+BEGIN_SRC ruby
+  Zone = Struct.new :id, :name
+  zone = Zone.new 'abc123', 'example.com.'
+#+END_SRC
+
+The primary feature of =path53= is changesets. Let's create one now:
+
+#+BEGIN_SRC ruby
+  changes = Path53::ChangeSet.new zone
+#+END_SRC
+
+With a changeset, we now create a batch of changes, using a block.
+
+#+BEGIN_SRC ruby
+  changes.batch do
+    add upsert a 'example.com', '127.0.0.1'
+    add upsert cname 'www.example.com.', 'example.com'
+  end
+#+END_SRC
+
+There's a fair bit going on in there, so let's have a look.
+
+~add~ says we want to add a change to this batch. ~remove~ would do the
+opposite.
+
+~upsert~ is what this change should do. ~create~, ~delete~, and ~upsert~ are all
+valid here.
+
+~a~ and ~cname~ describe the type of record we want to change. Any standard DNS
+record type would valid here.
+
+In the context of the ~a~ record, ~example.com~ refers to the name of the
+record, and ~127.0.0.1~ refers to the target of that record.
+
+Now that we have a batch of changes, simply call ~apply!~ to apply them.
+
+#+BEGIN_SRC ruby
+  changes.apply!
+#+END_SRC
+
+** Want more?
+
+As a convenient shorthand, you can do the following:
+
+#+BEGIN_SRC ruby
+  Path53.change(zone).batch { add upsert a 'www.example.com', '127.0.0.1' }.apply!
+#+END_SRC
+
+If you leave out an action, =path53= will assume you meant to ~upsert~.
+Therefore, this is equivalent to the previous example:
+
+#+BEGIN_SRC ruby
+  Path53.change(zone).batch { add a 'www.example.com', '127.0.0.1' }.apply!
+#+END_SRC
+
+=path53= plays nicely with =aws-sdk=. If you're working with ELBs for instance,
+you can pass a LoadBalancerDescription as a target, and =path53= will do the
+right thing. Therefore, the following is valid:
+
+#+BEGIN_SRC ruby
+  Path53.change(zone).batch { add a 'www.example.com', MyLoadBalancer }.apply!
+#+END_SRC
+
+Alias Targets are supported as well:
+
+#+BEGIN_SRC ruby
+  Path53.change(zone).batch { add a 'www.example.com', alias_target('zone_id', 'name') }.apply!
+#+END_SRC
+
+You may be wondering what's up with the ~remove~ method for changesets. Well, it
+turns out =path53= makes it really easy to cache things.
+
+#+BEGIN_SRC ruby
+  require 'yaml'
+
+  changes = Path53.change(zone).batch { add a 'www.example.com', '127.0.0.1' }
+
+  File.write 'saved-changes', YAML.dump(changes)
+
+  restored = YAML.load File.read 'saved-changes'
+  restored.apply!
+#+END_SRC
+
+This is useful when you have a changeset that is expensive to calculate, or you
+want to hold state for some reason.
+
+*** Even more?
+
+Most methods in =path53= support partial evaluation. The following is valid:
+
+#+BEGIN_SRC ruby
+  Path53.change(zone).batch do
+    www = a 'www.example.com'
+    add www.('127.0.0.1')
+  end
+#+END_SRC
+
+If for some reason you wanted to do that. It's pretty handy in an
+~each_with_object~ block, as an example.
+
+* License
+
+  ~path53~ is available under the [[https://tldrlegal.com/license/mit-license][MIT License]]. See ~LICENSE.txt~ for the full text.
+
+* Contributors
+
+  - [[https://colstrom.github.io/][Chris Olstrom]] | [[mailto:chris@olstrom.com][e-mail]] | [[https://twitter.com/ChrisOlstrom][Twitter]]
