@@ -7,6 +7,9 @@ Gem::Specification.new do |gem|
   gem.homepage    = 'https://github.com/colstrom/path53'
   gem.summary     = 'Simplified Changes for Route53'
 
+  gem.cert_chain  = %w(certs/colstrom.cert.pem)
+  gem.signing_key = File.expand_path ENV.fetch 'GEM_SIGNING_KEY'
+
   gem.files         = `git ls-files`.split("\n")
   gem.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   gem.executables   = `git ls-files -- bin/*`.split("\n").map { |f| File.basename(f) }
