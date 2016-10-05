@@ -23,6 +23,26 @@ validation rules are often surprising. =path53= aims to tame this complexity.
 tampered with (and really should, since calling ~apply!~ acts on your AWS
 account with your credentials).
 
+Assuming you have trusted the certificate, you can perform a trusted installation like so:
+
+#+BEGIN_SRC shell
+  gem install path53 --trust-policy MediumSecurity
+#+END_SRC
+
+Using =bundler=, the process is similar:
+
+#+BEGIN_SRC shell
+  bundle --trust-policy MediumSecurity
+#+END_SRC
+
+*** Why MediumSecurity?
+
+=MediumSecurity= requires valid signatures on *signed* gems, but allows unsigned
+dependencies. While =path53= has few dependencies, not all of them are signed.
+Using =HighSecurity= will fail unless *all* dependencies are signed.
+
+*** Trusting the signing certificate
+
 A copy of the public key is included in the repository for verification.
 Assuming you've cloned the repository to =./path53=, you can add it to your list
 of trusted keys like so:
