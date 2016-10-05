@@ -17,6 +17,34 @@ validation rules are often surprising. =path53= aims to tame this complexity.
   gem install path53
 #+END_SRC
 
+** Trusted Installation
+
+=path53= is cryptographically signed. You can verify that it hasn't been
+tampered with (and really should, since calling ~apply!~ acts on your AWS
+account with your credentials).
+
+A copy of the public key is included in the repository for verification.
+Assuming you've cloned the repository to =./path53=, you can add it to your list
+of trusted keys like so:
+
+#+BEGIN_SRC shell
+  gem cert --add ./path53/certs/colstrom.cert.pem
+#+END_SRC
+
+You can also fetch the key directly from GitHub.
+
+For modern shells like =fish=, use the following:
+
+#+BEGIN_SRC shell
+  gem cert --add (curl -s https://raw.githubusercontent.com/colstrom/path53/master/certs/colstrom.cert.pem | psub)
+#+END_SRC
+
+For vintage shells like =bash=, use the following:
+
+#+BEGIN_SRC shell
+  gem cert add <(curl -s https://raw.githubusercontent.com/colstrom/path53/master/certs/colstrom.cert.pem)
+#+END_SRC
+
 * Usage
 
 First, we need to require it.
