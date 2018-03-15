@@ -48,7 +48,7 @@ Assuming you've cloned the repository to =./path53=, you can add it to your list
 of trusted keys like so:
 
 #+BEGIN_SRC shell
-  gem cert --add ./path53/certs/colstrom.cert.pem
+  gem cert --add ./path53/trust/certificates/colstrom.cert.pem
 #+END_SRC
 
 You can also fetch the key directly from GitHub.
@@ -56,13 +56,13 @@ You can also fetch the key directly from GitHub.
 For modern shells like =fish=, use the following:
 
 #+BEGIN_SRC shell
-  gem cert --add (curl -s https://raw.githubusercontent.com/colstrom/path53/master/certs/colstrom.cert.pem | psub)
+  gem cert --add (curl -s https://raw.githubusercontent.com/colstrom/path53/master/trust/certificates/colstrom.cert.pem | psub)
 #+END_SRC
 
 For vintage shells like =bash=, use the following:
 
 #+BEGIN_SRC shell
-  gem cert add <(curl -s https://raw.githubusercontent.com/colstrom/path53/master/certs/colstrom.cert.pem)
+  gem cert add <(curl -s https://raw.githubusercontent.com/colstrom/path53/master/trust/certificates/colstrom.cert.pem)
 #+END_SRC
 
 * Usage
