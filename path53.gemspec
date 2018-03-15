@@ -7,7 +7,7 @@ Gem::Specification.new do |gem|
   gem.homepage    = 'https://github.com/colstrom/path53'
   gem.summary     = 'Simplified Changes for Route53'
 
-  gem.cert_chain  = %w(certs/colstrom.cert.pem)
+  gem.cert_chain  = %w(trust/certificates/colstrom.pem)
   gem.signing_key = File.expand_path ENV.fetch 'GEM_SIGNING_KEY'
 
   gem.files         = `git ls-files`.split("\n")
